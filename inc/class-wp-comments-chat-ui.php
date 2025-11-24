@@ -633,8 +633,9 @@ class WP_Comments_Chat_UI {
 				}
 			}
 		} else {
-			// If no last_comment_id, return empty (initial load already has all comments).
-			$new_comments = array();
+			// If last_comment_id is 0, it means the client has no comments.
+			// If we found comments, they are all new.
+			$new_comments = $comments;
 		}
 
 		// Organize comments into parent/child structure.
