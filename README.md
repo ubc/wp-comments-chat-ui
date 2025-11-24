@@ -45,6 +45,33 @@ This plugin uses `@wordpress/scripts` for building the React frontend.
     npm run build
     ```
 
+## Configuration
+
+### Supported Post Types
+
+By default, the plugin does not enable the chat UI on any post types. You must explicitly allow it using the `wp_comments_to_chat_allowed_post_types` filter.
+
+Add the following code to your theme's `functions.php` or a custom plugin:
+
+```php
+add_filter( 'wp_comments_to_chat_allowed_post_types', function( $post_types ) {
+    // Add 'post' and 'page' to the allowed list.
+    $post_types[] = 'post';
+    $post_types[] = 'page';
+    return $post_types;
+} );
+```
+
+### Polling Interval
+
+You can customize the polling interval (how often the plugin checks for new comments) using the `wp_comments_chat_ui_poll_interval` filter. The default is 5000ms (5 seconds).
+
+```php
+add_filter( 'wp_comments_chat_ui_poll_interval', function( $interval ) {
+    return 10000; // Set to 10 seconds.
+} );
+```
+
 ## License
 
 GPL-2.0-or-later
