@@ -1,0 +1,18 @@
+{
+  "name": "wp-comments-chat-ui",
+  "version": "2.0.0",
+  "description": "Chat-style comments UI for WordPress - React implementation",
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "packages-update": "wp-scripts packages-update"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^26.0.0"
+  },
+  "dependencies": {
+    "@wordpress/element": "^5.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
