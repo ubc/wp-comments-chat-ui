@@ -90,7 +90,7 @@
 .chat-empty-state {
 	text-align: center;
 	padding: 4rem 2rem;
-	color: #a0aec0;
+	color: #4a5568;
 }
 
 .chat-empty-icon {
@@ -132,7 +132,7 @@
 .chat-comments-login-card p {
 	margin-bottom: 1.5rem;
 	font-size: 1rem;
-	color: #475569;
+	color: #334155;
 }
 
 .chat-comments-login-card a {
@@ -285,12 +285,12 @@
 
 .chat-timestamp {
 	font-size: 0.75rem;
-	color: #718096;
+	color: #4a5568;
 	white-space: nowrap;
 }
 
 .chat-timestamp a {
-	color: #718096;
+	color: #4a5568;
 	text-decoration: none;
 }
 
@@ -484,7 +484,7 @@
 .chat-form-closed {
 	text-align: center;
 	padding: 1rem;
-	color: #718096;
+	color: #4a5568;
 }
 
 .chat-form-closed p {
@@ -540,7 +540,7 @@
 	outline: none;
 	border-color: #667eea;
 	background: white;
-	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
 }
 
 .chat-submit-button {
@@ -579,7 +579,7 @@
 .chat-form-login-required {
 	text-align: center;
 	padding: 1rem;
-	color: #718096;
+	color: #4a5568;
 }
 
 .chat-form-login-required p {

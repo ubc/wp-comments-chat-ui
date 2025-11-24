@@ -134,7 +134,7 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 			{replyingTo && (
 				<div className="chat-reply-indicator">
 					<div className="chat-reply-indicator-text">
-						<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+						<svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
 							<path d="M8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6-.097 1.016-.417 2.13-.771 2.966-.079.186.074.394.273.362 2.256-.37 3.597-.938 4.18-1.234A9.06 9.06 0 0 0 8 15z" />
 						</svg>
 						<span>
@@ -144,6 +144,7 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 					<button
 						type="button"
 						className="chat-reply-cancel"
+						aria-label="Cancel reply"
 						onClick={onCancelReply}
 					>
 						Cancel
@@ -157,6 +158,7 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 						ref={textareaRef}
 						id="comment"
 						name="comment"
+						aria-label="Comment text"
 						placeholder="Type your message..."
 						rows="1"
 						value={comment}
@@ -170,6 +172,7 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 				<button
 					type="submit"
 					className="chat-submit-button"
+					aria-label="Submit comment"
 					disabled={isSubmitting || !comment.trim()}
 					style={{ opacity: isSubmitting ? 0.6 : 1 }}
 				>
@@ -179,7 +182,7 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 							<path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="2" fill="none" />
 						</svg>
 					) : (
-						<svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+						<svg aria-hidden="true" width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
 							<path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z" />
 						</svg>
 					)}
