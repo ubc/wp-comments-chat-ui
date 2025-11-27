@@ -38,6 +38,9 @@ class WP_Comments_Chat_UI {
 		// Assets.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_chat_assets' ) );
 
+		// Force comments open for supported post types.
+		add_filter( 'comments_open', array( $this, 'force_comments_open' ), 10, 2 );
+
 		// Hide default comments.
 		add_filter( 'comments_template', array( $this, 'return_empty_comments_template' ), 999 );
 		add_filter( 'render_block', array( $this, 'remove_comments_block' ), 999, 2 );
@@ -84,6 +87,22 @@ class WP_Comments_Chat_UI {
 			array(),
 			filemtime( $src_dir . '/chat-app.css' )
 		);
+	}
+
+	/**
+	 * Force comments open for supported post types.
+	 *
+	 * @param bool $open Whether comments are open.
+	 * @param int  $post_id The post ID.
+	 * @return bool True if comments are open, false otherwise.
+	 */
+	public function force_comments_open( $open, $post_id ) {
+		// Only on allowed post types.
+		if ( ! $this->is_post_type_allowed() ) {
+			return $open;
+		}
+
+		return true;
 	}
 
 	/**
