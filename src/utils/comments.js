@@ -2,7 +2,8 @@ const DEFAULT_META = Object.freeze({
 	authorName: '',
 	timestamp: '',
 	contentHtml: '',
-	avatarHtml: '',
+	avatarUrl: '',
+	avatarAlt: '',
 	isPostAuthor: false,
 	permalink: '',
 });
@@ -16,7 +17,8 @@ const normalizeMeta = (meta = {}) => {
 		authorName: meta.authorName ?? meta.author_name ?? DEFAULT_META.authorName,
 		timestamp: meta.timestamp ?? meta.time ?? DEFAULT_META.timestamp,
 		contentHtml: meta.contentHtml ?? meta.content_html ?? DEFAULT_META.contentHtml,
-		avatarHtml: meta.avatarHtml ?? meta.avatar_html ?? DEFAULT_META.avatarHtml,
+		avatarUrl: meta.avatarUrl ?? meta.avatar_url ?? DEFAULT_META.avatarUrl,
+		avatarAlt: meta.avatarAlt ?? meta.avatar_alt ?? DEFAULT_META.avatarAlt,
 		isPostAuthor: Boolean(
 			meta.isPostAuthor ?? meta.is_post_author ?? DEFAULT_META.isPostAuthor
 		),
@@ -46,17 +48,11 @@ export function normalizeComment(raw) {
 
 	const rawParent = raw.comment_parent ?? raw.parent ?? 0;
 	const parentId = Number.parseInt(rawParent, 10) || 0;
-	const html = raw.comment_html ?? raw.html ?? '';
 	const meta = normalizeMeta(raw.comment_meta ?? raw.meta);
-
-	if (!meta.contentHtml && html) {
-		meta.contentHtml = html;
-	}
 
 	return {
 		id,
 		parentId,
-		html,
 		meta,
 	};
 }

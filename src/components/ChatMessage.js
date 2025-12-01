@@ -18,8 +18,9 @@ function ChatMessage({
 		const base = {
 			authorName: '',
 			timestamp: '',
-			contentHtml: comment.html || '',
-			avatarHtml: '',
+			contentHtml: '',
+			avatarUrl: '',
+			avatarAlt: '',
 			isPostAuthor: false,
 			permalink: '',
 		};
@@ -31,13 +32,22 @@ function ChatMessage({
 		return {
 			...base,
 			...comment.meta,
-			contentHtml: comment.meta.contentHtml || base.contentHtml,
 		};
-	}, [comment.meta, comment.html]);
+	}, [comment.meta]);
 
 	return (
 		<div className="chat-message-content">
-			<div className="chat-avatar" aria-hidden="true" dangerouslySetInnerHTML={{ __html: metadata.avatarHtml }} />
+			<div className="chat-avatar" aria-hidden="true">
+				{metadata.avatarUrl && (
+					<img 
+						src={metadata.avatarUrl} 
+						alt={metadata.avatarAlt} 
+						width="40" 
+						height="40"
+						loading="lazy"
+					/>
+				)}
+			</div>
 
 			<div className="chat-bubble">
 				<div className="chat-bubble-header">

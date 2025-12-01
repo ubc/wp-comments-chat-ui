@@ -3,6 +3,7 @@ import ChatHeader from './components/ChatHeader';
 import ChatMessages from './components/ChatMessages';
 import ChatForm from './components/ChatForm';
 import EmptyState from './components/EmptyState';
+import LoginPrompt from './components/LoginPrompt';
 import useComments from './hooks/useComments';
 
 /**
@@ -52,6 +53,15 @@ function App({ initialData, appConfig }) {
 		}
 	}, [submitComment, scrollToBottom]);
 
+	if (!appConfig.isLoggedIn) {
+		return (
+			<div className="chat-comments-container">
+				<ChatHeader commentCount={commentCount} />
+				<LoginPrompt loginUrl={appConfig.loginUrl} />
+			</div>
+		);
+	}
+
 	return (
 		<div className="chat-comments-container">
 			<ChatHeader commentCount={commentCount} />
@@ -90,6 +100,7 @@ function App({ initialData, appConfig }) {
 		</div>
 	);
 }
+
 
 export default App;
 

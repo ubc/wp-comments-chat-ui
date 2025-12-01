@@ -113,22 +113,6 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 		);
 	}
 
-	if (!appConfig.userId || appConfig.userId === 0) {
-		return (
-			<div className="chat-comments-login-required">
-				<div className="chat-comments-login-card">
-					<div className="chat-comments-login-icon" aria-hidden="true">🔒</div>
-					<p>
-						You must be <a href={appConfig.loginUrl}>logged in</a> to comment.
-					</p>
-					<a className="chat-comments-login-button" href={appConfig.loginUrl}>
-						Log In
-					</a>
-				</div>
-			</div>
-		);
-	}
-
 	return (
 		<form id="chat-commentform" className="chat-form" onSubmit={handleSubmit}>
 			{replyingTo && (
