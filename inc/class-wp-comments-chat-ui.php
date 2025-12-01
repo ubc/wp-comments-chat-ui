@@ -297,9 +297,6 @@ class WP_Comments_Chat_UI {
 					<div class="chat-bubble-header">
 						<span class="chat-author-name">
 							<?php echo esc_html( $meta['authorName'] ); ?>
-							<?php if ( ! empty( $meta['isPostAuthor'] ) ) : ?>
-								<span class="chat-author-badge"><?php esc_html_e( 'Author', 'wp-comments-chat-ui' ); ?></span>
-							<?php endif; ?>
 						</span>
 						<span class="chat-timestamp">
 							<a href="<?php echo esc_url( $meta['permalink'] ); ?>">
@@ -357,7 +354,7 @@ class WP_Comments_Chat_UI {
 			<?php if ( $has_replies && 0 === $depth ) : ?>
 				<div class="chat-thread" data-parent-id="<?php echo esc_attr( $comment_id ); ?>" style="display: none;">
 					<?php foreach ( $comments_by_parent[ $comment_id ] as $reply ) : ?>
-						<?php $this->render_chat_message( $reply, $comments_by_parent, $depth + 1 ); ?>
+						<?php ///$this->render_chat_message( $reply, $comments_by_parent, $depth + 1 ); ?>
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>

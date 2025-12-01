@@ -43,9 +43,6 @@ function ChatMessage({
 				<div className="chat-bubble-header">
 					<span className="chat-author-name">
 						{metadata.authorName}
-						{metadata.isPostAuthor && (
-							<span className="chat-author-badge">Author</span>
-						)}
 					</span>
 					<span className="chat-timestamp">
 						{metadata.permalink ? (
