@@ -680,3 +680,30 @@
 		padding-left: 0.5rem;
 	}
 }
+/* Updated Reply Indicator Styles */
+.chat-reply-info {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	flex: 1;
+	min-width: 0;
+}
+
+.chat-reply-preview {
+	font-size: 0.8rem;
+	color: #64748b;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding-left: 1.4rem;
+}
+
+.chat-reply-cancel {
+	align-self: center;
+	margin-left: 0.5rem;
+}
+
+.chat-new-message-indicator {
+	background: #f1f5f9;
+	color: #64748b;
+}

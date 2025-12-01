@@ -110,6 +110,7 @@ function ChatMessage({
 									onClick={() => onReply({
 										commentId: comment.id,
 										authorName: metadata.authorName,
+										contentHtml: metadata.contentHtml,
 									})}
 								>
 									<svg aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
