@@ -35,6 +35,19 @@ function ChatMessage({
 		};
 	}, [comment.meta]);
 
+	const replyLabel = useMemo(() => {
+		if (!metadata.contentHtml) {
+			return `Reply to ${metadata.authorName}`;
+		}
+		const div = document.createElement('div');
+		div.innerHTML = metadata.contentHtml;
+		const text = div.textContent || div.innerText || '';
+		const words = text.trim().split(/\s+/);
+		const snippet = words.slice(0, 15).join(' ');
+		const ellipsis = words.length > 15 ? '...' : '';
+		return `Reply to ${metadata.authorName} on message '${snippet}${ellipsis}'`;
+	}, [metadata.authorName, metadata.contentHtml]);
+
 	return (
 		<div className="chat-message-content">
 			<div className="chat-avatar" aria-hidden="true">
@@ -106,7 +119,7 @@ function ChatMessage({
 									className="chat-reply-button"
 									data-comment-id={comment.id}
 									data-author={metadata.authorName}
-									aria-label={`Reply to ${metadata.authorName}`}
+									aria-label={replyLabel}
 									onClick={() => onReply({
 										commentId: comment.id,
 										authorName: metadata.authorName,
