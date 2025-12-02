@@ -810,17 +810,6 @@
 	display: block;
 }
 
-.mention-avatar-ai {
-	width: 28px;
-	height: 28px;
-	border-radius: 4px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: linear-gradient(135deg, #36c5f0 0%, #2eb67d 50%, #e01e5a 100%);
-	color: white;
-}
-
 .mention-avatar-placeholder {
 	width: 28px;
 	height: 28px;
@@ -832,18 +821,15 @@
 	color: rgba(255, 255, 255, 0.7);
 }
 
-.mention-status {
-	position: absolute;
-	bottom: -2px;
-	right: -2px;
-	width: 10px;
-	height: 10px;
-	border-radius: 50%;
-	border: 2px solid #1a1d21;
-}
-
-.mention-status-ai {
-	background: #2eb67d;
+.mention-avatar-icon {
+	width: 28px;
+	height: 28px;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #4a4d52;
+	color: white;
 }
 
 .mention-info {

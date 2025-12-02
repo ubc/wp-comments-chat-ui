@@ -8,7 +8,6 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 	const [comment, setComment] = useState('');
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const textareaRef = useRef(null);
-	const formRef = useRef(null);
 
 	// Mention state
 	const [mentionState, setMentionState] = useState({
@@ -216,7 +215,7 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 	};
 
 	return (
-		<form id="chat-commentform" className="chat-form" onSubmit={handleSubmit} ref={formRef}>
+		<form id="chat-commentform" className="chat-form" onSubmit={handleSubmit}>
 			<div className="chat-reply-indicator">
 				{replyingTo ? (
 					<>

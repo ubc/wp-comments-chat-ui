@@ -372,9 +372,12 @@ class WP_Comments_Chat_UI {
 		add_filter( 'pre_comment_approved', array( $this, 'force_comment_approval' ) );
 		// Disable flood protection for chat.
 		add_filter( 'comment_flood_filter', array( $this, 'disable_comment_flood' ) );
+		// Disable duplicate comment check for chat.
+		add_filter( 'duplicate_comment_id', array( $this, 'disable_duplicate_check' ) );
 		
 		$comment_id = wp_new_comment( $comment_data, true );
 		
+		remove_filter( 'duplicate_comment_id', array( $this, 'disable_duplicate_check' ) );
 		remove_filter( 'comment_flood_filter', array( $this, 'disable_comment_flood' ) );
 		remove_filter( 'pre_comment_approved', array( $this, 'force_comment_approval' ) );
 
@@ -506,6 +509,16 @@ class WP_Comments_Chat_UI {
 	}
 
 	/**
+	 * Disable duplicate comment check.
+	 *
+	 * @param int $comment_id The duplicate comment ID, if found.
+	 * @return int Returns 0 to bypass the duplicate check.
+	 */
+	public function disable_duplicate_check( $comment_id ) {
+		return 0;
+	}
+
+	/**
 	 * Get mentionable users for a post.
 	 *
 	 * @param int   $post_id  The post ID.
@@ -515,14 +528,6 @@ class WP_Comments_Chat_UI {
 	private function get_mentionable_users( $post_id, $comments = null ) {
 		$mentionable_users = array();
 		$current_user_id   = get_current_user_id();
-
-		// Add AI assistance option first.
-		$mentionable_users[] = array(
-			'id'        => 'ai',
-			'name'      => __( 'AI Assistance', 'wp-comments-chat-ui' ),
-			'avatarUrl' => '',
-			'isAi'      => true,
-		);
 
 		/**
 		 * Filter the user query arguments for fetching mentionable users.
@@ -554,7 +559,6 @@ class WP_Comments_Chat_UI {
 				'id'        => $user->ID,
 				'name'      => $user->display_name,
 				'avatarUrl' => $avatar_data['url'],
-				'isAi'      => false,
 			);
 		}
 
