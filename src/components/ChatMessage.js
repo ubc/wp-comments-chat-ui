@@ -1,6 +1,38 @@
 import { useMemo } from 'react';
 
 /**
+ * Escape special regex characters.
+ */
+function escapeRegExp(string) {
+	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Highlight @mentions in HTML content.
+ * Matches against known user names for accurate highlighting.
+ */
+function highlightMentions(html, mentionableUsers = []) {
+	if (!html) return '';
+	
+	// Build list of user names sorted by length (longest first for greedy matching)
+	const userNames = mentionableUsers
+		.map(u => u.name)
+		.filter(Boolean)
+		.sort((a, b) => b.length - a.length);
+	
+	let result = html;
+	
+	// Highlight @mentions by matching against known user names
+	for (const name of userNames) {
+		// Match @name exactly (case insensitive), followed by space, punctuation, tag, or end
+		const pattern = new RegExp(`@${escapeRegExp(name)}(?=\\s|$|[.,!?;:]|<)`, 'gi');
+		result = result.replace(pattern, `<span class="chat-mention">@${name}</span>`);
+	}
+	
+	return result;
+}
+
+/**
  * Chat Message Component
  */
 function ChatMessage({
@@ -34,6 +66,11 @@ function ChatMessage({
 			...comment.meta,
 		};
 	}, [comment.meta]);
+
+	// Process content to highlight @mentions
+	const highlightedContent = useMemo(() => {
+		return highlightMentions(metadata.contentHtml, appConfig.mentionableUsers || []);
+	}, [metadata.contentHtml, appConfig.mentionableUsers]);
 
 	const replyLabel = useMemo(() => {
 		if (!metadata.contentHtml) {
@@ -78,7 +115,7 @@ function ChatMessage({
 
 				<div
 					className="chat-text"
-					dangerouslySetInnerHTML={{ __html: metadata.contentHtml }}
+					dangerouslySetInnerHTML={{ __html: highlightedContent }}
 				/>
 
 				{depth === 0 && (

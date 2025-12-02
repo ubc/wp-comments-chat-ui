@@ -212,14 +212,15 @@ class WP_Comments_Chat_UI {
 
 		// Prepare app config for React.
 		$app_config = array(
-			'postId'       => $post->ID,
-			'userId'       => get_current_user_id(),
-			'isLoggedIn'   => $is_logged_in,
-			'nonce'        => wp_create_nonce( 'chat-comments-app' ),
-			'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-			'commentsOpen' => comments_open(),
-			'loginUrl'     => wp_login_url( get_permalink() ),
-			'pollInterval' => apply_filters( 'wp_comments_chat_ui_poll_interval', self::DEFAULT_POLL_INTERVAL ),
+			'postId'          => $post->ID,
+			'userId'          => get_current_user_id(),
+			'isLoggedIn'      => $is_logged_in,
+			'nonce'           => wp_create_nonce( 'chat-comments-app' ),
+			'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
+			'commentsOpen'    => comments_open(),
+			'loginUrl'        => wp_login_url( get_permalink() ),
+			'pollInterval'    => apply_filters( 'wp_comments_chat_ui_poll_interval', self::DEFAULT_POLL_INTERVAL ),
+			'mentionableUsers' => $is_logged_in ? $this->get_mentionable_users( $post->ID, $comments ) : array(),
 		);
 
 		$this->set_bootstrap_data( $initial_data, $app_config );
@@ -502,6 +503,70 @@ class WP_Comments_Chat_UI {
 	 */
 	public function disable_comment_flood() {
 		return false;
+	}
+
+	/**
+	 * Get mentionable users for a post.
+	 *
+	 * @param int   $post_id  The post ID.
+	 * @param array $comments Optional. Pre-fetched comments (unused, kept for compatibility).
+	 * @return array List of mentionable users.
+	 */
+	private function get_mentionable_users( $post_id, $comments = null ) {
+		$mentionable_users = array();
+		$current_user_id   = get_current_user_id();
+
+		// Add AI assistance option first.
+		$mentionable_users[] = array(
+			'id'        => 'ai',
+			'name'      => __( 'AI Assistance', 'wp-comments-chat-ui' ),
+			'avatarUrl' => '',
+			'isAi'      => true,
+		);
+
+		/**
+		 * Filter the user query arguments for fetching mentionable users.
+		 *
+		 * Plugins can use this filter to restrict which users are fetched.
+		 * For example, to limit to specific roles or to users in a group.
+		 *
+		 * @param array $args    The WP_User_Query arguments.
+		 * @param int   $post_id The current post ID.
+		 */
+		$user_query_args = apply_filters(
+			'wp_comments_chat_ui_mentionable_users_query_args',
+			array(
+				'number'  => 100, // Limit for performance.
+				'orderby' => 'display_name',
+				'order'   => 'ASC',
+				'exclude' => array( $current_user_id ),
+			),
+			$post_id
+		);
+
+		// Get users.
+		$users = get_users( $user_query_args );
+
+		foreach ( $users as $user ) {
+			$avatar_data = get_avatar_data( $user->ID, array( 'size' => 32 ) );
+
+			$mentionable_users[] = array(
+				'id'        => $user->ID,
+				'name'      => $user->display_name,
+				'avatarUrl' => $avatar_data['url'],
+				'isAi'      => false,
+			);
+		}
+
+		/**
+		 * Filter the final list of mentionable users.
+		 *
+		 * Plugins can use this filter to add, remove, or modify users in the list.
+		 *
+		 * @param array $mentionable_users The list of mentionable users.
+		 * @param int   $post_id           The current post ID.
+		 */
+		return apply_filters( 'wp_comments_chat_ui_mentionable_users', $mentionable_users, $post_id );
 	}
 
 	/**

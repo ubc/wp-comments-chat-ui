@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import MentionList from './MentionList';
 
 /**
  * Chat Form Component
@@ -7,6 +8,17 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 	const [comment, setComment] = useState('');
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const textareaRef = useRef(null);
+	const formRef = useRef(null);
+
+	// Mention state
+	const [mentionState, setMentionState] = useState({
+		isOpen: false,
+		startIndex: -1,
+		searchQuery: '',
+	});
+
+	// Get mentionable users from localized data
+	const mentionableUsers = appConfig.mentionableUsers || [];
 
 	// Auto-focus textarea when replying
 	useEffect(() => {
@@ -46,8 +58,90 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 		});
 	};
 
+	// Handle mention detection
+	const handleInputChange = useCallback((e) => {
+		const value = e.target.value;
+		const cursorPos = e.target.selectionStart;
+
+		setComment(value);
+
+		// Check if we should open or update the mention popup
+		const textBeforeCursor = value.slice(0, cursorPos);
+		const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+
+		if (lastAtIndex !== -1) {
+			// Check if @ is at start or preceded by whitespace
+			const charBeforeAt = lastAtIndex > 0 ? textBeforeCursor[lastAtIndex - 1] : ' ';
+			const isValidMentionStart = charBeforeAt === ' ' || charBeforeAt === '\n' || lastAtIndex === 0;
+
+			if (isValidMentionStart) {
+				const searchQuery = textBeforeCursor.slice(lastAtIndex + 1);
+				// Only show popup if there's no space in the search query (still typing the mention)
+				if (!searchQuery.includes(' ')) {
+					setMentionState({
+						isOpen: true,
+						startIndex: lastAtIndex,
+						searchQuery,
+					});
+					return;
+				}
+			}
+		}
+
+		// Close mention popup if conditions not met
+		if (mentionState.isOpen) {
+			setMentionState({
+				isOpen: false,
+				startIndex: -1,
+				searchQuery: '',
+			});
+		}
+	}, [mentionState.isOpen]);
+
+	// Handle mention selection
+	const handleMentionSelect = useCallback((user) => {
+		if (!textareaRef.current || mentionState.startIndex === -1) return;
+
+		const before = comment.slice(0, mentionState.startIndex);
+		const after = comment.slice(textareaRef.current.selectionStart);
+		const mentionText = `@${user.name} `;
+		const newValue = before + mentionText + after;
+		const newCursorPos = before.length + mentionText.length;
+
+		setComment(newValue);
+		setMentionState({
+			isOpen: false,
+			startIndex: -1,
+			searchQuery: '',
+		});
+
+		// Restore focus and cursor position
+		requestAnimationFrame(() => {
+			if (textareaRef.current) {
+				textareaRef.current.focus();
+				textareaRef.current.selectionStart = newCursorPos;
+				textareaRef.current.selectionEnd = newCursorPos;
+			}
+		});
+	}, [comment, mentionState.startIndex]);
+
+	// Close mention popup
+	const closeMentionPopup = useCallback(() => {
+		setMentionState({
+			isOpen: false,
+			startIndex: -1,
+			searchQuery: '',
+		});
+	}, []);
+
 	// Handle keyboard shortcuts
 	const handleKeyDown = (e) => {
+		// If mention popup is open, let MentionList handle navigation keys
+		if (mentionState.isOpen && ['ArrowDown', 'ArrowUp', 'Enter', 'Tab', 'Escape'].includes(e.key)) {
+			// Don't prevent default here - MentionList will handle it
+			return;
+		}
+
 		if (e.key === 'Enter') {
 			if (e.metaKey || e.ctrlKey) {
 				e.preventDefault();
@@ -122,7 +216,7 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 	};
 
 	return (
-		<form id="chat-commentform" className="chat-form" onSubmit={handleSubmit}>
+		<form id="chat-commentform" className="chat-form" onSubmit={handleSubmit} ref={formRef}>
 			<div className="chat-reply-indicator">
 				{replyingTo ? (
 					<>
@@ -162,12 +256,19 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 						id="comment"
 						name="comment"
 						aria-describedby={replyingTo ? 'chat-reply-info' : 'chat-new-message-info'}
-						placeholder="Type your message..."
+						placeholder="Type your message... (use @ to mention)"
 						rows="1"
 						value={comment}
-						onChange={(e) => setComment(e.target.value)}
+						onChange={handleInputChange}
 						onKeyDown={handleKeyDown}
 						required
+					/>
+					<MentionList
+						isOpen={mentionState.isOpen}
+						searchQuery={mentionState.searchQuery}
+						users={mentionableUsers}
+						onSelect={handleMentionSelect}
+						onClose={closeMentionPopup}
 					/>
 					<input type="hidden" name="comment_parent" id="comment_parent_field" value={replyingTo?.commentId || 0} />
 					<input type="hidden" name="comment_post_ID" value={appConfig.postId} />
@@ -196,4 +297,3 @@ function ChatForm({ replyingTo, onCancelReply, onSubmitComment, appConfig }) {
 }
 
 export default ChatForm;
-

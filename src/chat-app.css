@@ -709,3 +709,213 @@
 	background: #f1f5f9;
 	color: #64748b;
 }
+
+/* ========================================
+   MENTION DIALOG STYLES (Slack-like)
+   ======================================== */
+
+.mention-dialog {
+	position: absolute;
+	bottom: calc(100% + 8px);
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 8px;
+	background: #1a1d21;
+	box-shadow: 
+		0 0 0 1px rgba(255, 255, 255, 0.1),
+		0 4px 6px rgba(0, 0, 0, 0.3),
+		0 12px 24px rgba(0, 0, 0, 0.4);
+	max-height: 320px;
+	overflow: hidden;
+	z-index: 1000;
+}
+
+.mention-dialog::backdrop {
+	background: transparent;
+}
+
+.mention-dialog-header {
+	padding: 12px 16px 8px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.mention-dialog-title {
+	font-size: 13px;
+	font-weight: 700;
+	color: rgba(255, 255, 255, 0.7);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.mention-dialog-search {
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.5);
+	font-style: italic;
+}
+
+.mention-list {
+	list-style: none;
+	margin: 0;
+	padding: 8px 0;
+	max-height: 220px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.mention-list::-webkit-scrollbar {
+	width: 6px;
+}
+
+.mention-list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.mention-list::-webkit-scrollbar-thumb {
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 3px;
+}
+
+.mention-item {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 6px 16px;
+	cursor: pointer;
+	transition: background-color 0.1s ease;
+}
+
+.mention-item:hover,
+.mention-item-selected {
+	background-color: #1164a3;
+}
+
+.mention-avatar-wrapper {
+	position: relative;
+	flex-shrink: 0;
+}
+
+.mention-avatar {
+	width: 28px;
+	height: 28px;
+	border-radius: 4px;
+	object-fit: cover;
+	display: block;
+}
+
+.mention-avatar-ai {
+	width: 28px;
+	height: 28px;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: linear-gradient(135deg, #36c5f0 0%, #2eb67d 50%, #e01e5a 100%);
+	color: white;
+}
+
+.mention-avatar-placeholder {
+	width: 28px;
+	height: 28px;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #4a4d52;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.mention-status {
+	position: absolute;
+	bottom: -2px;
+	right: -2px;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	border: 2px solid #1a1d21;
+}
+
+.mention-status-ai {
+	background: #2eb67d;
+}
+
+.mention-info {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+}
+
+.mention-name {
+	font-size: 15px;
+	font-weight: 500;
+	color: #fff;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mention-description {
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.mention-dialog-footer {
+	padding: 8px 16px;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.mention-hint {
+	font-size: 11px;
+	color: rgba(255, 255, 255, 0.5);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.mention-hint kbd {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 20px;
+	height: 18px;
+	padding: 0 4px;
+	font-family: inherit;
+	font-size: 10px;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.7);
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 3px;
+	margin-right: 2px;
+}
+
+/* ========================================
+   MENTION HIGHLIGHT (Slack-style)
+   ======================================== */
+
+/* Mention pill in chat messages */
+.chat-mention {
+	display: inline;
+	padding: 0 4px;
+	border-radius: 3px;
+	background-color: rgba(29, 155, 209, 0.15);
+	color: #1d9bd1;
+	font-weight: 600;
+}
+
+.chat-mention:hover {
+	background-color: rgba(29, 155, 209, 0.25);
+	cursor: pointer;
+}
+
