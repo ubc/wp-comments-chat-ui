@@ -83,7 +83,7 @@ class WP_Comments_Chat_UI {
 		// Enqueue CSS.
 		wp_enqueue_style(
 			'chat-comments-app',
-			$src_dir . '/chat-app.css',
+			$src_url . '/chat-app.css',
 			array(),
 			filemtime( $src_dir . '/chat-app.css' )
 		);
