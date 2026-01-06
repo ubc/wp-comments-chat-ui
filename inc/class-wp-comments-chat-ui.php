@@ -267,7 +267,8 @@ class WP_Comments_Chat_UI {
 		$formatted_content          = wpautop( $preserved_newlines_content );
 
 		// Get avatar data.
-		$avatar_data = get_avatar_data( $comment->user_id ?: $comment->comment_author_email, array( 'size' => 40 ) );
+		$avatar_email = $comment->user_id ? $comment->user_id : $comment->comment_author_email;
+		$avatar_data  = get_avatar_data( $avatar_email, array( 'size' => 40 ) );
 
 		return array(
 			'authorName'   => get_comment_author( $comment ),
@@ -357,15 +358,17 @@ class WP_Comments_Chat_UI {
 
 		// Prepare comment data.
 		$current_user = wp_get_current_user();
-		$comment_data = wp_slash( array(
-			'comment_post_ID'      => $comment_post_id,
-			'comment_content'      => $comment_content,
-			'comment_parent'       => $comment_parent,
-			'user_id'              => $current_user->ID,
-			'comment_author'       => $current_user->display_name,
-			'comment_author_email' => $current_user->user_email,
-			'comment_author_url'   => $current_user->user_url,
-		) );
+		$comment_data = wp_slash(
+			array(
+				'comment_post_ID'      => $comment_post_id,
+				'comment_content'      => $comment_content,
+				'comment_parent'       => $comment_parent,
+				'user_id'              => $current_user->ID,
+				'comment_author'       => $current_user->display_name,
+				'comment_author_email' => $current_user->user_email,
+				'comment_author_url'   => $current_user->user_url,
+			)
+		);
 
 		// Insert comment.
 		// Force approval for chat comments from logged-in users.
@@ -374,9 +377,9 @@ class WP_Comments_Chat_UI {
 		add_filter( 'comment_flood_filter', array( $this, 'disable_comment_flood' ) );
 		// Disable duplicate comment check for chat.
 		add_filter( 'duplicate_comment_id', array( $this, 'disable_duplicate_check' ) );
-		
+
 		$comment_id = wp_new_comment( $comment_data, true );
-		
+
 		remove_filter( 'duplicate_comment_id', array( $this, 'disable_duplicate_check' ) );
 		remove_filter( 'comment_flood_filter', array( $this, 'disable_comment_flood' ) );
 		remove_filter( 'pre_comment_approved', array( $this, 'force_comment_approval' ) );
@@ -393,6 +396,25 @@ class WP_Comments_Chat_UI {
 
 		// Get the comment object.
 		$comment = get_comment( $comment_id );
+
+		// Detect mentions in the comment content.
+		$mentions = $this->detect_mentions( $comment_content, $comment_post_id );
+
+		// Fire action hook for detected mentions.
+		if ( ! empty( $mentions ) ) {
+			/**
+			 * Fires when mentions are detected in a comment.
+			 *
+			 * @param array      $mentions        Array of mention data. Each mention contains:
+			 *                                      - 'id': User ID or special identifier (e.g., 'ai-assistance')
+			 *                                      - 'name': Display name
+			 *                                      - 'type': Optional type (e.g., 'ai')
+			 * @param WP_Comment $comment         The comment object.
+			 * @param string     $comment_content The raw comment content.
+			 * @param int        $post_id         The post ID.
+			 */
+			do_action( 'wp_comments_chat_ui_mentions_detected', $mentions, $comment, $comment_content, $comment_post_id );
+		}
 
 		// Return success with comment data.
 		wp_send_json_success(
@@ -594,6 +616,105 @@ class WP_Comments_Chat_UI {
 
 		// Check if current post type is in allowed list.
 		return in_array( $current_post_type, $allowed_post_types, true );
+	}
+
+	/**
+	 * Detect mentions in comment content.
+	 *
+	 * Parses @mentions from comment content and matches them against mentionable users.
+	 *
+	 * @param string $comment_content The comment content.
+	 * @param int    $post_id         The post ID.
+	 * @return array Array of detected mentions with user data.
+	 */
+	private function detect_mentions( $comment_content, $post_id ) {
+		$mentions = array();
+
+		// Extract @mentions from content using regex.
+		// Matches @username patterns where username can contain letters, numbers, spaces, and hyphens.
+		preg_match_all( '/@([^\s@]+)/', $comment_content, $matches );
+
+		if ( empty( $matches[1] ) ) {
+			return $mentions;
+		}
+
+		// Get mentionable users for this post.
+		$mentionable_users = $this->get_mentionable_users( $post_id );
+
+		// Create lookup maps for efficient matching.
+		$user_by_id    = array();
+		$user_by_name  = array();
+		$user_by_login = array();
+
+		foreach ( $mentionable_users as $user ) {
+			if ( isset( $user['id'] ) ) {
+				$user_by_id[ $user['id'] ] = $user;
+			}
+			if ( isset( $user['name'] ) ) {
+				// Normalize name for comparison (case-insensitive, trim).
+				$normalized_name                 = strtolower( trim( $user['name'] ) );
+				$user_by_name[ $normalized_name ] = $user;
+			}
+			if ( isset( $user['login'] ) ) {
+				$normalized_login                 = strtolower( trim( $user['login'] ) );
+				$user_by_login[ $normalized_login ] = $user;
+			}
+		}
+
+		// Track found mentions to avoid duplicates.
+		$found_mention_ids = array();
+
+		// Match detected @mentions against mentionable users.
+		foreach ( $matches[1] as $mention_text ) {
+			$mention_text = trim( $mention_text );
+			if ( empty( $mention_text ) ) {
+				continue;
+			}
+
+			$normalized_mention = strtolower( $mention_text );
+			$matched_user       = null;
+
+			// Try to match by name first (most common case).
+			if ( isset( $user_by_name[ $normalized_mention ] ) ) {
+				$matched_user = $user_by_name[ $normalized_mention ];
+			} elseif ( isset( $user_by_login[ $normalized_mention ] ) ) {
+				// Try to match by login.
+				$matched_user = $user_by_login[ $normalized_mention ];
+			} else {
+				// Try partial name matching (e.g., "@John" matches "John Doe").
+				foreach ( $user_by_name as $normalized_name => $user ) {
+					// Check if mention matches the start of the name.
+					if ( strpos( $normalized_name, $normalized_mention ) === 0 ) {
+						$matched_user = $user;
+						break;
+					}
+				}
+			}
+
+			if ( $matched_user ) {
+				$mention_id = isset( $matched_user['id'] ) ? $matched_user['id'] : $normalized_mention;
+
+				// Avoid duplicates.
+				if ( ! in_array( $mention_id, $found_mention_ids, true ) ) {
+					$found_mention_ids[] = $mention_id;
+
+					$mentions[] = array(
+						'id'   => $mention_id,
+						'name' => isset( $matched_user['name'] ) ? $matched_user['name'] : $mention_text,
+						'type' => isset( $matched_user['type'] ) ? $matched_user['type'] : 'user',
+					);
+				}
+			}
+		}
+
+		/**
+		 * Filter detected mentions before they are passed to the action hook.
+		 *
+		 * @param array  $mentions        Array of detected mentions.
+		 * @param string $comment_content The comment content.
+		 * @param int    $post_id         The post ID.
+		 */
+		return apply_filters( 'wp_comments_chat_ui_detected_mentions', $mentions, $comment_content, $post_id );
 	}
 }
 
