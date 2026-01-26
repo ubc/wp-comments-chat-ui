@@ -4,6 +4,23 @@
  * Completely custom chat UI that doesn't rely on WordPress default components
  */
 
+ /* ========================================
+   0. UTILITY CLASSES
+   ======================================== */
+
+/* Hide elements visually while still keeping them available to assistive technologies. Further reading about this class: ["How-to: Hide content - The A11Y Project"](https://www.a11yproject.com/posts/how-to-hide-content/) */
+.visually-hidden {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	/* 1px */
+	height: 0.0625rem;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	/* 1px */
+	width: 0.0625rem;
+}
+
 /* ========================================
    1. CONTAINER & LAYOUT
    ======================================== */
@@ -30,7 +47,7 @@
    ======================================== */
 
 .chat-header {
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	background: linear-gradient(135deg, #5569c6 0%, #764ba2 100%);
 	color: white;
 	padding: 1.25rem 1.5rem;
 	display: flex;
@@ -55,10 +72,11 @@
    3. MESSAGES CONTAINER
    ======================================== */
 
-.chat-messages {
+ul.chat-messages {
 	flex: 1;
 	overflow-y: auto;
 	overflow-x: hidden;
+	margin: 0;
 	padding: 1.5rem;
 	background: #f5f7fa;
 	display: flex;
@@ -167,7 +185,8 @@
    5. CHAT MESSAGE
    ======================================== */
 
-.chat-message {
+li.chat-message {
+	list-style: "";
 	animation: slideIn 0.3s ease-out;
 }
 
@@ -289,6 +308,7 @@
 	font-size: 0.75rem;
 	color: #4a5568;
 	white-space: nowrap;
+	font-weight: 400;
 }
 
 .chat-timestamp a {
@@ -351,11 +371,12 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 0.5rem;
+	margin-inline-start: auto;
 	padding: 0.35rem 0.75rem;
-	background: rgba(29, 155, 209, 0.1);
-	border: 1px solid rgba(29, 155, 209, 0.2);
+	background: #5869d2;
+	border: 1px solid transparent;
 	border-radius: 16px;
-	color: #1d9bd1;
+	color: #fff;
 	font-size: 0.8rem;
 	font-weight: 600;
 	cursor: pointer;
@@ -364,9 +385,14 @@
 }
 
 .chat-thread-toggle:hover {
-	background: rgba(29, 155, 209, 0.15);
-	border-color: rgba(29, 155, 209, 0.3);
+	box-shadow: 0 0 5px 1px rgba(100, 83, 208, 0.3);
 	transform: translateY(-1px);
+}
+
+.chat-thread-toggle:focus-visible {
+	border-color: #fff;
+	/* 2px */
+	outline-offset: 0.125rem;
 }
 
 .chat-thread-toggle svg {
@@ -383,6 +409,29 @@
 	transform: rotate(90deg);
 }
 
+a.chat-message-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.35rem 0.75rem;
+	background: transparent;
+	border: 1px solid rgba(102, 126, 234, 0.2);
+	border-radius: 16px;
+	color: #5869d2;
+	font-size: 0.8rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+	font-family: inherit;
+	text-decoration: none;
+}
+
+a.chat-message-link:hover {
+	background: #f7f8fe;
+	border-color: #5869d2;
+	transform: translateY(-1px);
+}
+
 /* Reply button */
 .chat-reply-button {
 	display: inline-flex;
@@ -392,7 +441,7 @@
 	background: transparent;
 	border: 1px solid rgba(102, 126, 234, 0.2);
 	border-radius: 16px;
-	color: #667eea;
+	color: #5869d2;
 	font-size: 0.8rem;
 	font-weight: 600;
 	cursor: pointer;
@@ -401,8 +450,8 @@
 }
 
 .chat-reply-button:hover {
-	background: rgba(102, 126, 234, 0.1);
-	border-color: #667eea;
+	background: #f7f8fe;
+	border-color: #5869d2;
 	transform: translateY(-1px);
 }
 

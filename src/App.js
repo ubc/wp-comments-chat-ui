@@ -66,7 +66,7 @@ function App({ initialData, appConfig }) {
 		<div className="chat-comments-container">
 			<ChatHeader commentCount={commentCount} />
 
-			<div
+			<ul
 				className="chat-messages"
 				ref={messagesContainerRef}
 			>
@@ -82,12 +82,13 @@ function App({ initialData, appConfig }) {
 							onToggleThread={toggleThread}
 							onReply={setReplyingTo}
 							appConfig={appConfig}
+							startingHeadingLevel={3}
 						/>
 					))
 				) : (
 					<EmptyState />
 				)}
-			</div>
+			</ul>
 
 			<div className="chat-form-container">
 				<ChatForm
