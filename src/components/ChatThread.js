@@ -19,19 +19,24 @@ function ChatThread({
 			className={`chat-thread ${isExpanded ? 'chat-thread-expanded' : ''}`}
 			data-parent-id={parentId}
 		>
-			{replies.map(reply => (
-				<ChatMessages
-					key={reply.id}
-					comment={reply}
-					commentsByParent={commentsByParent}
-					depth={1}
-					expandedThreads={expandedThreads}
-					threadsWithNewMessages={threadsWithNewMessages}
-					onToggleThread={onToggleThread}
-					onReply={onReply}
-					appConfig={appConfig}
-				/>
-			))}
+			<h4 class="visually-hidden">Replies</h4>
+
+			<ul>
+				{replies.map(reply => (
+					<ChatMessages
+						key={reply.id}
+						comment={reply}
+						commentsByParent={commentsByParent}
+						depth={1}
+						expandedThreads={expandedThreads}
+						threadsWithNewMessages={threadsWithNewMessages}
+						onToggleThread={onToggleThread}
+						onReply={onReply}
+						appConfig={appConfig}
+						startingHeadingLevel={5}
+					/>
+				))}
+			</ul>
 		</div>
 	);
 }

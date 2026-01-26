@@ -13,6 +13,7 @@ function ChatMessages({
 	onToggleThread,
 	onReply,
 	appConfig,
+	startingHeadingLevel = 3
 }) {
 	const replies = commentsByParent[comment.id] || [];
 	const hasReplies = replies.length > 0;
@@ -21,8 +22,7 @@ function ChatMessages({
 	const hasNewMessages = threadsWithNewMessages.has(commentIdNum);
 
 	return (
-		<div 
-			id={`comment-${comment.id}`}
+		<li
 			className={`chat-message ${depth > 0 ? 'chat-message-reply' : ''}`}
 			data-comment-id={comment.id}
 		>
@@ -36,6 +36,7 @@ function ChatMessages({
 				onToggleThread={() => onToggleThread(comment.id)}
 				onReply={onReply}
 				appConfig={appConfig}
+				startingHeadingLevel={startingHeadingLevel}
 			/>
 
 			{hasReplies && depth === 0 && (
@@ -51,7 +52,7 @@ function ChatMessages({
 					appConfig={appConfig}
 				/>
 			)}
-		</div>
+		</li>
 	);
 }
 
